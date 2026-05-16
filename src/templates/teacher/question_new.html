@@ -1,0 +1,118 @@
+{% extends "teacher/base.html" %}
+{% block title %}{{ page_title or "Add question" }}{% endblock %}
+
+{% set is_edit = question is defined and question %}
+{% set current_options = question.options if is_edit else [] %}
+{% set min_cards = 3 %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">{{ page_title or "Add question" }}</h1>
+
+    <form class="panel question-form" method="post" action="{{ form_action }}" id="questionForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <section class="panel__group">
+            <h2 class="panel__title">Question type</h2>
+            <div class="qtype-switch" data-edit="{{ '1' if is_edit else '0' }}">
+                {% set types = [
+                    ('single',   'Single answer'),
+                    ('multiple', 'Multiple answers'),
+                    ('text',     'Text answer')
+                ] %}
+                {% for code, label in types %}
+                <label class="qtype-switch__item">
+                    <input type="radio" name="type" value="{{ code }}"
+                           {% if code == qtype %}checked{% endif %}
+                           {% if is_edit %}disabled{% endif %}>
+                    <span>{{ label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            {% if is_edit %}
+            {# disabled radios are not submitted — duplicate the selected type as a hidden field #}
+            <input type="hidden" name="type" value="{{ qtype }}">
+            {% endif %}
+        </section>
+
+        <section class="panel__group">
+            <h2 class="panel__title">Question text</h2>
+            <textarea class="form__input form__input--area" name="text"
+                      placeholder="Enter question text..."
+                      required>{{ question.text if is_edit else "" }}</textarea>
+        </section>
+
+        <section class="panel__group">
+            <h2 class="panel__title">Points for the question</h2>
+            <input class="form__input" type="number" name="points" min="1" max="100"
+                   value="{{ question.points if is_edit else 1 }}" required>
+        </section>
+
+        <section class="panel__group qblock qblock--choice"
+                 data-roles="single,multiple"
+                 {% if qtype == 'text' %}hidden{% endif %}>
+            <div class="answers-header">
+                <h2 class="panel__title">Add an answer</h2>
+                <button class="btn btn--secondary btn--sm" type="button" id="addOption">
+                    Add answer option
+                </button>
+            </div>
+
+            <div class="answers" id="answers"
+                 data-type="{{ qtype if qtype in ('single', 'multiple') else 'single' }}">
+                {% if is_edit and qtype in ('single', 'multiple') %}
+                    {% for opt in current_options %}
+                    <div class="answer-card">
+                        <header class="answer-card__head">
+                            <span class="answer-card__title">Answer {{ loop.index }}</span>
+                            <label class="answer-card__correct">
+                                <input type="{{ 'radio' if qtype == 'single' else 'checkbox' }}"
+                                       name="correct" value="{{ loop.index0 }}"
+                                       {% if opt.is_correct %}checked{% endif %}>
+                                <span>Correct</span>
+                            </label>
+                        </header>
+                        <input class="form__input" type="text" name="option"
+                               placeholder="Answer option" value="{{ opt.option_text }}">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    {% for i in range(1, min_cards + 1) %}
+                    <div class="answer-card">
+                        <header class="answer-card__head">
+                            <span class="answer-card__title">Answer {{ i }}</span>
+                            <label class="answer-card__correct">
+                                <input type="{{ 'radio' if qtype != 'multiple' else 'checkbox' }}"
+                                       name="correct" value="{{ loop.index0 }}">
+                                <span>Correct</span>
+                            </label>
+                        </header>
+                        <input class="form__input" type="text" name="option"
+                               placeholder="Answer option">
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </section>
+
+        {# Text question: an expected answer can be specified for auto-grading.
+           If the field is empty — any non-empty answer is accepted. #}
+        <section class="panel__group qblock qblock--text"
+                 data-roles="text"
+                 {% if qtype != 'text' %}hidden{% endif %}>
+            <h2 class="panel__title">Expected answer (optional)</h2>
+            <input class="form__input" type="text" name="correct_text"
+                   placeholder="If set — student answer is matched ignoring case and whitespace"
+                   value="{{ question.correct_text if is_edit else '' }}">
+        </section>
+
+        <button class="btn btn--primary btn--block" type="submit">
+            {{ "Save" if is_edit else "Add question" }}
+        </button>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/teacher.js') }}"></script>
+{% endblock %}

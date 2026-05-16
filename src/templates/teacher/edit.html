@@ -1,0 +1,106 @@
+{% extends "teacher/base.html" %}
+{% block title %}Test settings{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Test settings</h1>
+
+    <section class="panel">
+        <h2 class="panel__title">Basic parameters</h2>
+
+        <form class="test-form" method="post" action="{{ url_for('teacher.edit', test_id=test.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="test-form__row">
+                <input class="form__input" type="text" name="title"
+                       placeholder="Test title" value="{{ test.title }}" required>
+                <input class="form__input" type="number" min="1" name="time_limit_minutes"
+                       placeholder="Time limit (min)"
+                       value="{{ test.time_limit_minutes }}" required>
+            </div>
+            <textarea class="form__input form__input--area" name="description"
+                      placeholder="Description (optional)">{{ test.description }}</textarea>
+
+            <label class="checkbox">
+                <span>Randomize question order</span>
+                <input type="checkbox" name="randomize" {% if test.randomize %}checked{% endif %}>
+                <span class="checkbox__box"></span>
+            </label>
+
+            <div class="qcards">
+                {% for q in test.questions %}
+                <article class="qcard">
+                    <header class="qcard__head">
+                        <h3 class="qcard__title">Question {{ loop.index }}</h3>
+                        <div class="qcard__icons">
+                            <a class="qcard__icon qcard__icon--link"
+                               href="{{ url_for('teacher.edit_question', test_id=test.id, question_id=q.id) }}"
+                               title="Edit" aria-label="Edit">
+                                <img src="{{ url_for('static', filename='img/pencil.svg') }}"
+                                     alt="" width="20" height="20">
+                            </a>
+                            <button class="qcard__icon qcard__icon--btn js-confirm"
+                                    type="submit"
+                                    formaction="{{ url_for('teacher.delete_question', test_id=test.id, question_id=q.id) }}"
+                                    formnovalidate
+                                    data-confirm="Delete question «{{ q.text|truncate(40) }}»? This action cannot be undone."
+                                    title="Delete" aria-label="Delete">
+                                <img src="{{ url_for('static', filename='img/trash.svg') }}"
+                                     alt="" width="20" height="20">
+                            </button>
+                        </div>
+                    </header>
+                    <p class="qcard__text">{{ q.text }}</p>
+                    {% if q.type == 'single' %}
+                        {% for opt in q.options %}
+                        <label class="qcard__option">
+                            <input type="radio" disabled {% if opt.is_correct %}checked{% endif %}>
+                            <span>{{ opt.option_text }}</span>
+                        </label>
+                        {% endfor %}
+                    {% elif q.type == 'multiple' %}
+                        {% for opt in q.options %}
+                        <label class="qcard__option">
+                            <input type="checkbox" disabled {% if opt.is_correct %}checked{% endif %}>
+                            <span>{{ opt.option_text }}</span>
+                        </label>
+                        {% endfor %}
+                    {% else %}
+                        <div class="qcard__textarea">{{ q.correct_text }}</div>
+                    {% endif %}
+                </article>
+                {% else %}
+                <p class="empty">This test has no questions. Add the first one.</p>
+                {% endfor %}
+            </div>
+
+            <div class="test-form__actions test-form__actions--row">
+                {% if test.is_published %}
+                <a class="btn btn--secondary"
+                   href="{{ url_for('teacher.index') }}">Back to tests</a>
+                <button class="btn btn--secondary" type="submit"
+                        name="action" value="draft">Close access</button>
+                <button class="btn btn--danger js-confirm" type="submit"
+                        formaction="{{ url_for('teacher.delete', test_id=test.id) }}"
+                        formnovalidate
+                        data-confirm="Delete test «{{ test.title }}»? This action cannot be undone.">
+                    Delete test
+                </button>
+                {% else %}
+                <a class="btn btn--secondary"
+                   href="{{ url_for('teacher.add_question', test_id=test.id) }}">
+                    Add question
+                </a>
+                <a class="btn btn--secondary"
+                   href="{{ url_for('teacher.availability', test_id=test.id) }}">
+                    Availability settings
+                </a>
+                <button class="btn btn--secondary" type="submit"
+                        name="action" value="draft">Save as draft</button>
+                <button class="btn btn--primary" type="submit"
+                        name="action" value="publish">Publish</button>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</section>
+{% endblock %}

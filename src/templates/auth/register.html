@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Quiz System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="page page--center">
+    <section class="card">
+        <header class="card__header">
+            <h1 class="card__title">Register in the system</h1>
+            <p class="card__subtitle">Create an account to take tests and review your results</p>
+        </header>
+
+        {% if error %}
+            <div class="alert alert--error">{{ error }}</div>
+        {% endif %}
+
+        <form class="form" method="post" action="{{ url_for('auth.register') }}" id="registerForm" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input class="form__input" type="text" name="full_name" placeholder="Enter Name" required>
+            <input class="form__input" type="email" name="email" placeholder="Enter Email" required>
+            <select class="form__input" name="role" required>
+                <option value="" disabled selected>Choose role</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+            </select>
+            <input class="form__input" type="password" name="password" placeholder="Enter Password" required>
+            <input class="form__input" type="password" name="password_confirm" placeholder="Confirm password" required>
+
+            <div class="form__footer">
+                <span class="form__hint">Already have an account. <a href="{{ url_for('auth.login') }}">Sign in</a></span>
+                <button class="btn btn--primary" type="submit">Register</button>
+            </div>
+        </form>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

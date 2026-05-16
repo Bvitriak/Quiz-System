@@ -1,0 +1,58 @@
+{% extends "teacher/base.html" %}
+{% block title %}Create test{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Create Test</h1>
+
+    <section class="panel">
+        <h2 class="panel__title">Basic parameters</h2>
+
+        <form class="test-form" method="post" action="{{ url_for('teacher.create') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="test-form__row">
+                <input class="form__input" type="text" name="title"
+                       placeholder="Test title" required>
+                <input class="form__input" type="number" min="1" name="time_limit_minutes"
+                       placeholder="Time limit (min)" required>
+            </div>
+            <textarea class="form__input form__input--area" name="description"
+                      placeholder="Description (optional)"></textarea>
+
+            <label class="checkbox">
+                <span>Randomize question order</span>
+                <input type="checkbox" name="randomize">
+                <span class="checkbox__box"></span>
+            </label>
+
+            <div class="qtypes">
+                <div class="qtype">
+                    <h3 class="qtype__title">Single-answer<br>question</h3>
+                    <p class="qtype__desc">Student picks only one answer</p>
+                    <button class="btn btn--secondary qtype__btn" type="submit"
+                            name="action" value="add:single">Add question</button>
+                </div>
+                <div class="qtype">
+                    <h3 class="qtype__title">Multiple-choice<br>question</h3>
+                    <p class="qtype__desc">Student picks multiple answers</p>
+                    <button class="btn btn--secondary qtype__btn" type="submit"
+                            name="action" value="add:multiple">Add question</button>
+                </div>
+                <div class="qtype">
+                    <h3 class="qtype__title">Text-answer<br>question</h3>
+                    <p class="qtype__desc">Student enters free-form text</p>
+                    <button class="btn btn--secondary qtype__btn" type="submit"
+                            name="action" value="add:text">Add question</button>
+                </div>
+            </div>
+
+            <div class="test-form__actions">
+                <button class="btn btn--secondary" type="submit"
+                        name="action" value="draft">Save as draft</button>
+                <button class="btn btn--secondary" type="submit"
+                        name="action" value="publish">Publish</button>
+            </div>
+        </form>
+    </section>
+</section>
+{% endblock %}

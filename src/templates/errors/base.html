@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ code }} — {{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors.css') }}">
+</head>
+<body class="page page--center error-page error-page--{{ code }}">
+    <main class="error">
+        <div class="error__code" data-code="{{ code }}">{{ code }}</div>
+        <h1 class="error__title">{{ title }}</h1>
+        <p class="error__description">{{ description }}</p>
+
+        <div class="error__actions">
+            <a class="btn btn--primary" href="{{ url_for('auth.index') }}">Go home</a>
+            <button class="btn btn--secondary" type="button" id="errorBack">Back</button>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/errors.js') }}"></script>
+</body>
+</html>

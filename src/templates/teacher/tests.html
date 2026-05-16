@@ -1,0 +1,50 @@
+{% extends "teacher/base.html" %}
+{% block title %}My tests{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <div class="teacher-header">
+        <h1 class="teacher-header__title">My tests</h1>
+        <a class="btn btn--primary" href="{{ url_for('teacher.create') }}">Create Test</a>
+    </div>
+
+    <div class="history-card">
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>Test<br>title</th>
+                    <th>Questions</th>
+                    <th>Created<br>date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in tests %}
+                <tr>
+                    <td>{{ test.title }}</td>
+                    <td>{{ test.question_count }}</td>
+                    <td>{{ test.created_at.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ test.status_label }}</td>
+                    <td>
+                        <a class="btn btn--primary btn--sm"
+                           href="{{ url_for('teacher.edit', test_id=test.id) }}">Edit</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="empty">No tests yet. Create the first one.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if tests %}
+        <div class="history__footer">
+            <button class="history__more" type="button">Show more</button>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}

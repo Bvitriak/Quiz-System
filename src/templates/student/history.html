@@ -1,0 +1,48 @@
+{% extends "student/base.html" %}
+{% block title %}Attempt history{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Attempt history</h1>
+
+    <div class="history-card">
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>Test<br>title</th>
+                    <th>Date<br>(UTC)</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                    <th>Attempt</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr {% if loop.index > 5 %}class="is-hidden"{% endif %}>
+                    <td>{{ item.test.title }}</td>
+                    <td>{{ item.attempt.started_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>{{ item.attempt.success_percent }}/100</td>
+                    <td>{% if item.passed %}Passed{% else %}Failed{% endif %}</td>
+                    <td>{{ item.attempt.attempt_number }}</td>
+                    <td>{{ item.duration_text }}</td>
+                    <td>
+                        <a class="btn btn--primary btn--sm"
+                           href="{{ url_for('student.result', attempt_id=item.attempt.id) }}">Open</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="empty">You have not taken any tests yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if items|length > 5 %}
+        <div class="history__footer">
+            <button class="history__more" type="button">Show more</button>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
