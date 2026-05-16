@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussions
+    url: https://github.com/Bvitriak/quiz-system/discussions
+    about: General questions and ideas go in Discussions, not Issues.
+  - name: Documentation
+    url: https://github.com/Bvitriak/quiz-system/tree/main/docs
+    about: Before opening an issue, check the docs/ section - the answer may already be there.

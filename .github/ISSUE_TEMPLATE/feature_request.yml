@@ -1,0 +1,60 @@
+name: Feature request
+description: Suggest a new feature for Quiz System
+labels: ["enhancement"]
+assignees: ["Bvitriak"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the feature you want to add and why it's needed.
+        If the idea is large, split it across several Issues.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the system does the proposal affect?
+      options:
+        - Student dashboard (attempt / result / history)
+        - Teacher dashboard (quiz creation / questions / statistics)
+        - Authentication and roles
+        - Database / migrations (Alembic)
+        - HTTP routes / validation
+        - Templates / CSS / JS
+        - Tests / CI / linters
+        - Documentation (docs/)
+        - Deployment (Docker / .env)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this feature solve?
+      placeholder: The teacher cannot see which students have not yet completed the quiz.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      placeholder: Add a table in the teacher interface listing student names and their completion status.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives (if any)
+      placeholder: We could add CSV export and analyze the data manually.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Additional
+      options:
+        - label: I've checked that no such task is already in the open Issues
+          required: true
