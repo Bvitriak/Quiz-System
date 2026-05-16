@@ -1,0 +1,24 @@
+# Default owner
+*                          @Bvitriak
+
+# Backend
+/src/services/             @Bvitriak
+/src/repositories/         @Bvitriak
+/src/models/               @Bvitriak
+
+# Frontend / templates
+/src/templates/            @Bvitriak
+/src/static/               @Bvitriak
+
+# DB / migrations
+/alembic/                  @Bvitriak
+/init_db.sql               @Bvitriak
+
+# CI / workflow
+/.github/                  @Bvitriak
+/Dockerfile                @Bvitriak
+/compose.yaml              @Bvitriak
+
+# Documentation
+/docs/                     @Bvitriak
+/README.md                 @Bvitriak

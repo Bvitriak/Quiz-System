@@ -1,0 +1,97 @@
+name: Bug
+description: Report a bug in the application
+labels: ["bug"]
+assignees: ["Bvitriak"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill out the form as thoroughly as you can - it helps us quickly reproduce and fix the problem.
+        If you have a full traceback from the console, attach it at the very bottom.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What is going wrong?
+      placeholder: On the /student/attempts/12/result page, the answer breakdown is not shown for multiple-choice questions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      value: |
+        1. Open http://127.0.0.1:8000/register, register as a student
+        2. Go to a published quiz, start it
+        3. Answer a multiple-choice question
+        4. Finish the quiz
+        5. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: In the "Answer breakdown" section, all options are shown with V / X markers.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: The options list is empty; a TypeError exception appears in the logs.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: User role
+      options:
+        - Student
+        - Teacher
+        - Guest (page without login)
+        - Role-independent
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Authentication / roles
+        - Student dashboard (attempt / result / history)
+        - Teacher dashboard (quiz creation / questions)
+        - Templates / CSS / JS
+        - Database / migrations (Alembic)
+        - HTTP routes / form validation
+        - Tests / CI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS:
+        - Python:
+        - PostgreSQL:
+        - Browser (if it's a UI bug):
+        - Branch / commit:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / traceback / network response
+      description: Output from the terminal or the Network tab in the browser.
+      render: text
