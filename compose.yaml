@@ -1,0 +1,65 @@
+name: quiz-system
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: quiz-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-quiz_db}
+      POSTGRES_USER:     ${DB_USER:-quiz_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-quiz_pass_123}
+    ports:
+      - "${DB_PUBLIC_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-quiz_user} -d ${DB_NAME:-quiz_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - quiz-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: quiz-system:latest
+    container_name: quiz-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${DB_USER:-quiz_user}:${DB_PASSWORD:-quiz_pass_123}@db:5432/${DB_NAME:-quiz_db}
+      APP_SECRET_KEY: ${APP_SECRET_KEY:?Set APP_SECRET_KEY in .env}
+      DEBUG: "false"
+      PASS_THRESHOLD: ${PASS_THRESHOLD:-60}
+      ADMIN_CONTACT: ${ADMIN_CONTACT:-admin@example.com}
+      LOG_FILE: ${LOG_FILE:-}
+      PORT: "8000"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - quiz-net
+    volumes:
+      - app_logs:/var/log/quiz
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz', timeout=3).status == 200 else 1)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+
+volumes:
+  postgres_data:
+    name: quiz-system_postgres_data
+  app_logs:
+    name: quiz-system_app_logs
+
+networks:
+  quiz-net:
+    name: quiz-system_net
+    driver: bridge
