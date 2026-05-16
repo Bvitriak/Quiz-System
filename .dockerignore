@@ -1,0 +1,85 @@
+# VCS
+.git
+.gitignore
+.gitattributes
+.github
+
+# Secrets / locals
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+
+# Virtualenv
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging
+build/
+dist/
+sdist/
+*.egg
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Testing / coverage
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Type checking / linters
+.mypy_cache/
+.dmypy.json
+.ruff_cache/
+.pylint.d/
+.pyre/
+.pytype/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
+# OS
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+
+# Project
+docs/
+tests/
+.claude/
+.cursor/
+*.log
+logs/
+*.bak
+*.tmp
+*.swp
+
+# Docker
+Dockerfile.local
+compose.override.yaml
+docker-compose.override.yml
+
+# Docs
+README.md
+LICENSE
+*.md
