@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Quiz System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="page page--center">
+    <main class="hero">
+        <h1 class="hero__title">Knowledge Quiz<br>System</h1>
+        <p class="hero__subtitle">
+            Take online tests, receive results automatically
+            and track your progress in one place.
+        </p>
+        <div class="hero__actions">
+            <a href="{{ url_for('auth.login') }}" class="btn btn--primary">Sign in</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn--secondary">Register</a>
+        </div>
+    </main>
+</body>
+</html>

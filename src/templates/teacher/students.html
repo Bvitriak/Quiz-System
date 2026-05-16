@@ -1,0 +1,52 @@
+{% extends "teacher/base.html" %}
+{% block title %}Student statistics{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Student statistics</h1>
+
+    <div class="history-card">
+        <table class="history">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Test</th>
+                    <th>Attempts</th>
+                    <th>Best score</th>
+                    <th>Last attempt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    {% if row.per_test %}
+                        {% for t in row.per_test %}
+                        <tr>
+                            {% if loop.first %}
+                            <td rowspan="{{ row.per_test|length }}">{{ row.student.full_name }}</td>
+                            <td rowspan="{{ row.per_test|length }}">{{ row.student.email }}</td>
+                            {% endif %}
+                            <td>{{ t.test_title }}</td>
+                            <td>{{ t.attempts_count }}</td>
+                            <td>{{ t.best_score }}/100</td>
+                            <td>
+                                {{ t.last_attempt.finished_at.strftime('%d.%m.%Y %H:%M') }}
+                                ({{ t.last_attempt.success_percent }}/100)
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>{{ row.student.full_name }}</td>
+                            <td>{{ row.student.email }}</td>
+                            <td colspan="4" class="empty">No attempts yet</td>
+                        </tr>
+                    {% endif %}
+                {% else %}
+                <tr><td colspan="6" class="empty">No students registered yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

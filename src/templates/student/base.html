@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="view-transition" content="same-origin">
+    <title>{% block title %}Student Dashboard{% endblock %} — Quiz System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+</head>
+<body class="page student-page">
+    <header class="topbar">
+        <a class="topbar__logo" href="{{ url_for('student.index') }}">
+            <img class="topbar__logo-img"
+                 src="{{ url_for('static', filename='img/logo.svg') }}"
+                 alt="Quiz System" height="44">
+        </a>
+
+        <nav class="tabs">
+            <a class="tabs__item {% if active_tab == 'tests' %}tabs__item--active{% endif %}"
+               href="{{ url_for('student.index') }}">Tests</a>
+            <a class="tabs__item {% if active_tab == 'history' %}tabs__item--active{% endif %}"
+               href="{{ url_for('student.history') }}">Attempts</a>
+        </nav>
+
+        <div class="topbar__user">
+            <button class="avatar avatar--btn" type="button"
+                    id="userAvatar" aria-haspopup="true" aria-expanded="false"
+                    aria-controls="userMenu">
+                {{ current_user.full_name[:1] | upper }}
+            </button>
+            <div class="user-menu" id="userMenu" role="menu" hidden>
+                <div class="user-menu__row">
+                    <div class="user-menu__name">{{ current_user.full_name }}</div>
+                    <div class="user-menu__role">
+                        {{ "Teacher" if current_user.is_teacher else "Student" }}
+                    </div>
+                </div>
+                <a class="user-menu__logout" href="{{ url_for('auth.logout') }}" role="menuitem">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="student-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        <script id="flashData" type="application/json">
+            [{% for category, msg in messages %}{"category":{{ category|tojson }},"message":{{ msg|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
+        </script>
+    {% endwith %}
+
+    <script src="{{ url_for('static', filename='js/topbar.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

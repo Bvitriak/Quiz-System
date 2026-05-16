@@ -1,0 +1,112 @@
+{% extends "student/base.html" %}
+{% block title %}{{ test.title }}{% endblock %}
+
+{% block content %}
+<section class="content content--with-aside">
+    <form class="quiz-card"
+          method="post"
+          action="{{ url_for('student.question', attempt_id=attempt.id, n=current_index) }}"
+          id="quizForm"
+          data-remaining="{{ remaining_seconds }}"
+          data-timeout-url="{{ url_for('student.finish', attempt_id=attempt.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <header class="quiz-card__header">
+            <span class="quiz-card__progress">Question {{ current_index }}/{{ test.question_count }}</span>
+            <span class="quiz-card__timer">
+                Time remaining <span id="timer">--:--</span>
+            </span>
+        </header>
+
+        <h2 class="quiz-card__question">{{ current_index }}. {{ question.text }}</h2>
+
+        {% if question.type == 'text' %}
+        {% set prev_answer = attempt.answers_rel
+                              | selectattr('question_id', 'equalto', question.id)
+                              | list | first %}
+        <div class="quiz-card__answers">
+            <textarea class="form__input form__input--area"
+                      name="text_answer"
+                      placeholder="Enter your answer..."
+                      rows="6">{{ prev_answer.text_answer_raw if prev_answer else "" }}</textarea>
+        </div>
+        {% elif question.type == 'multiple' %}
+        {% set saved = attempt.answers_rel
+                         | selectattr('question_id', 'equalto', question.id)
+                         | list | first %}
+        {% set saved_positions = (saved.selected_options
+                                    | map(attribute='option')
+                                    | map(attribute='position')
+                                    | list) if saved else [] %}
+        <div class="quiz-card__answers">
+            {% for option in question.options %}
+            <label class="answer">
+                <input class="answer__input" type="checkbox"
+                       name="option" value="{{ loop.index0 }}"
+                       {% if loop.index0 in saved_positions %}checked{% endif %}>
+                <span class="answer__box"></span>
+                <span class="answer__text">{{ option.option_text }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="quiz-card__answers">
+            {% for option in question.options %}
+            <label class="answer">
+                <input class="answer__input"
+                       type="radio"
+                       name="option"
+                       value="{{ loop.index0 }}"
+                       {% if attempt.answers.get(question.id) == loop.index0 %}checked{% endif %}>
+                <span class="answer__box"></span>
+                <span class="answer__text">{{ option.option_text }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <footer class="quiz-card__footer">
+            {% if current_index > 1 %}
+            <a class="btn btn--secondary"
+               href="{{ url_for('student.question', attempt_id=attempt.id, n=current_index - 1) }}">
+                Back
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+            {% if current_index < test.question_count %}
+            <button class="btn btn--primary" type="submit" name="next" value="1">Next</button>
+            {% else %}
+            <button class="btn btn--primary" type="submit" name="finish" value="1">
+                Finish
+            </button>
+            {% endif %}
+        </footer>
+    </form>
+
+    <aside class="aside">
+        <section class="info-card">
+            <h3 class="info-card__title">Test information</h3>
+            <p>Total questions: {{ test.question_count }}</p>
+            <p>Time limit: {{ test.time_limit_minutes }} min</p>
+            <p>Time remaining <span id="timerInfo">--:--</span></p>
+            <p>Progress {{ attempt.answers | length }}/{{ test.question_count }}</p>
+        </section>
+
+        <section class="info-card">
+            <h3 class="info-card__title">Question navigation</h3>
+            <div class="qnav">
+                {% for q in questions %}
+                {% set i = loop.index %}
+                <a class="qnav__item {% if i == current_index %}qnav__item--current{% endif %}
+                          {% if q.id in attempt.answers %}qnav__item--answered{% endif %}"
+                   href="{{ url_for('student.question', attempt_id=attempt.id, n=i) }}">{{ i }}</a>
+                {% endfor %}
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}

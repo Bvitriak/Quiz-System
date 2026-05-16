@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in — Quiz System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body class="page page--center">
+    <section class="card card--compact">
+        <header class="card__header">
+            <h1 class="card__title card__title--center">Sign in</h1>
+        </header>
+
+        {% if error %}
+            <div class="alert alert--error">{{ error }}</div>
+        {% endif %}
+
+        <form class="form" method="post" action="{{ url_for('auth.login') }}" id="loginForm" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input class="form__input" type="email" name="email" placeholder="Enter Email" required>
+            <input class="form__input" type="password" name="password" placeholder="Enter Password" required>
+
+            <div class="form__footer">
+                <span class="form__hint">
+                    No account? <a href="{{ url_for('auth.register') }}">Register</a><br>
+                    <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+                </span>
+                <button class="btn btn--primary" type="submit">Sign in</button>
+            </div>
+        </form>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "student/base.html" %}
+{% block title %}Result not yet available{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <article class="panel">
+        <h1 class="panel__title">Results will be available later</h1>
+        {% if auto_finished %}
+        <p class="alert alert--info">
+            Attempt finished automatically — the allotted time has expired.
+        </p>
+        {% endif %}
+        <p>The teacher has hidden results until the end of the test availability window.</p>
+        <p>
+            <strong>Test:</strong> {{ test.title }}<br>
+            <strong>Attempt finished:</strong>
+            {{ attempt.finished_at.strftime('%d.%m.%Y %H:%M') }} (UTC)<br>
+            {% if test.availability_end %}
+            <strong>Results will be available after:</strong>
+            {{ test.availability_end.strftime('%d.%m.%Y %H:%M') }} (UTC)
+            {% endif %}
+        </p>
+        <a class="btn btn--primary" href="{{ url_for('student.index') }}">Back to tests</a>
+    </article>
+</section>
+{% endblock %}

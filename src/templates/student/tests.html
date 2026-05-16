@@ -1,0 +1,79 @@
+{% extends "student/base.html" %}
+{% block title %}Available tests{% endblock %}
+
+{% macro test_card(item, pass_threshold) %}
+    {% set test = item.test %}
+    <article class="test-card">
+        <div class="test-card__icon" aria-hidden="true">
+            <img src="{{ url_for('static', filename='img/test-icon.svg') }}"
+                 alt="" width="72" height="72">
+        </div>
+        <div class="test-card__body">
+            <h2 class="test-card__title">
+                {{ test.title }} — until {{ test.deadline.strftime('%d.%m.%Y') }}
+            </h2>
+            {% if test.description %}
+            <p class="test-card__description">{{ test.description }}</p>
+            {% endif %}
+            <p class="test-card__meta">Questions: {{ test.question_count }}</p>
+            <p class="test-card__meta">Time — {{ test.time_limit_minutes }} min</p>
+            <p class="test-card__meta">Passing score — {{ pass_threshold }}%</p>
+            {% if test.max_attempts is not none %}
+            <p class="test-card__meta">
+                Attempts: {{ item.used }} / {{ test.max_attempts }}
+                {% if item.left is not none and item.left > 0 %}
+                    — <strong>{{ item.left }} left</strong>
+                {% elif item.left == 0 %}
+                    — <strong>no attempts left</strong>
+                {% endif %}
+            </p>
+            {% endif %}
+            {% if test.availability_start or test.availability_end %}
+            <p class="test-card__meta">
+                Availability window:
+                {{ test.availability_start.strftime('%d.%m.%Y %H:%M') if test.availability_start else '—' }}
+                →
+                {{ test.availability_end.strftime('%d.%m.%Y %H:%M') if test.availability_end else '—' }}
+            </p>
+            {% endif %}
+        </div>
+
+        {% if item.can_start %}
+        <form method="post" action="{{ url_for('student.start_test', test_id=test.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn--primary" type="submit">Start test</button>
+        </form>
+        {% elif item.last_attempt %}
+        <a class="btn btn--secondary"
+           href="{{ url_for('student.result', attempt_id=item.last_attempt.id) }}">
+            View result
+        </a>
+        {% else %}
+        <span class="btn btn--secondary" aria-disabled="true">Currently unavailable</span>
+        {% endif %}
+    </article>
+{% endmacro %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Available tests</h1>
+
+    <div class="test-list">
+        {% for item in items if item.can_start %}
+            {{ test_card(item, pass_threshold) }}
+        {% else %}
+            <p class="empty">No available tests right now.</p>
+        {% endfor %}
+    </div>
+
+    {% set unavailable = items | rejectattr('can_start') | list %}
+    {% if unavailable %}
+    <h1 class="content__title">Unavailable tests</h1>
+    <div class="test-list">
+        {% for item in unavailable %}
+            {{ test_card(item, pass_threshold) }}
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

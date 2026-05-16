@@ -1,0 +1,106 @@
+{% extends "student/base.html" %}
+{% block title %}Test result{% endblock %}
+
+{% block content %}
+<section class="content content--with-aside">
+    <div class="result-card">
+        <h1 class="result-card__title">Test result: {{ test.title }}</h1>
+
+        <div class="result-card__score">{{ attempt.success_percent }}/100</div>
+
+        <div class="result-card__badge {% if passed %}result-card__badge--ok{% else %}result-card__badge--fail{% endif %}">
+            {% if passed %}Test passed{% else %}Test failed{% endif %}
+        </div>
+
+        <p class="result-card__row">
+            Correct answers: {{ attempt.correct_count }} of {{ test.question_count }}
+        </p>
+        <p class="result-card__row result-card__row--note">{{ feedback }}</p>
+        <p class="result-card__row">Completion time: {{ duration_text }}</p>
+
+        <a class="btn btn--primary btn--block" href="{{ url_for('student.index') }}">
+            Back to test list
+        </a>
+    </div>
+
+    <aside class="aside">
+        <section class="info-card">
+            <h3 class="info-card__title">Test information</h3>
+            <p>Total questions: {{ test.question_count }}</p>
+            <p>Time limit: {{ test.time_limit_minutes }} min</p>
+            <p>Time spent: {{ duration_text }}</p>
+            <p>Attempt #{{ attempt.attempt_number }}</p>
+        </section>
+
+        <section class="info-card">
+            <h3 class="info-card__title">Question navigation</h3>
+            <div class="qnav">
+                {% for q in questions %}
+                {% set i = loop.index %}
+                {% set correct = correct_map.get(q.id, False) %}
+                <a class="qnav__item qnav__item--static
+                          {% if correct %}qnav__item--ok{% else %}qnav__item--bad{% endif %}"
+                   href="#q{{ q.id }}">{{ i }}</a>
+                {% endfor %}
+            </div>
+        </section>
+    </aside>
+</section>
+
+<section class="content content--narrow">
+    <h2 class="content__title">Answer review</h2>
+
+    <div class="qreview">
+        {% for q in questions %}
+        {% set ans = answers_by_qid.get(q.id) %}
+        {% set is_correct = ans.is_correct if ans else False %}
+        {% set selected_ids = (ans.selected_options | map(attribute='option_id') | list) if ans else [] %}
+
+        <article id="q{{ q.id }}"
+                 class="qreview-item {% if is_correct %}qreview-item--ok{% else %}qreview-item--bad{% endif %}">
+            <header class="qreview-item__head">
+                <span class="qreview-item__num">Question {{ loop.index }}</span>
+                <span class="qreview-item__badge">
+                    {% if is_correct %}Correct{% else %}Incorrect{% endif %}
+                </span>
+            </header>
+            <p class="qreview-item__text">{{ q.text }}</p>
+
+            {% if q.type in ('single', 'multiple') %}
+            <ul class="qreview-item__options">
+                {% for opt in q.options %}
+                {% set chosen = opt.id in selected_ids %}
+                <li class="qreview-opt
+                           {% if opt.is_correct %}qreview-opt--correct{% endif %}
+                           {% if chosen and not opt.is_correct %}qreview-opt--wrong{% endif %}">
+                    <span class="qreview-opt__mark">
+                        {% if opt.is_correct %}✓{% elif chosen %}✗{% else %}·{% endif %}
+                    </span>
+                    <span class="qreview-opt__text">{{ opt.option_text }}</span>
+                    {% if chosen %}
+                    <span class="qreview-opt__tag">your answer</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="qreview-text">
+                <div class="qreview-text__row">
+                    <span class="qreview-text__label">Your answer:</span>
+                    <span class="qreview-text__value">
+                        {{ ans.text_answer_raw if ans and ans.text_answer_raw else "—" }}
+                    </span>
+                </div>
+                {% if not is_correct %}
+                <div class="qreview-text__row qreview-text__row--correct">
+                    <span class="qreview-text__label">Correct answer:</span>
+                    <span class="qreview-text__value">{{ q.correct_text }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

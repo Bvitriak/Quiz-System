@@ -1,0 +1,58 @@
+{% extends "teacher/base.html" %}
+{% block title %}Availability settings{% endblock %}
+
+{% block content %}
+<section class="content content--narrow">
+    <h1 class="content__title">Availability Settings</h1>
+
+    <form class="availability" method="post"
+          action="{{ url_for('teacher.availability', test_id=test.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <section class="panel availability__col">
+            <h2 class="panel__title">Test availability</h2>
+            <p class="field-hint">All dates and times are in the UTC time zone.</p>
+
+            <label class="field-label">Start (UTC)</label>
+            <input class="form__input" type="date" name="start_date"
+                   value="{{ test.availability_start.strftime('%Y-%m-%d') if test.availability_start else '' }}">
+
+            <label class="field-label">Time (UTC)</label>
+            <input class="form__input" type="time" name="start_time"
+                   value="{{ test.availability_start.strftime('%H:%M') if test.availability_start else '' }}">
+
+            <label class="field-label">End (UTC)</label>
+            <input class="form__input" type="date" name="end_date"
+                   value="{{ test.availability_end.strftime('%Y-%m-%d') if test.availability_end else '' }}">
+
+            <label class="field-label">Time (UTC)</label>
+            <input class="form__input" type="time" name="end_time"
+                   value="{{ test.availability_end.strftime('%H:%M') if test.availability_end else '' }}">
+        </section>
+
+        <section class="panel availability__col">
+            <h2 class="panel__title">Additional settings</h2>
+
+            <label class="field-label">Time limit (minutes)</label>
+            <input class="form__input" type="number" min="1" name="time_limit_minutes"
+                   placeholder="How many minutes the student gets"
+                   value="{{ test.time_limit_minutes if test.time_limit_minutes else '' }}"
+                   required>
+
+            <label class="field-label">Attempt limit</label>
+            <input class="form__input" type="number" min="1" name="max_attempts"
+                   placeholder="Choose number of attempts"
+                   value="{{ test.max_attempts if test.max_attempts else '' }}">
+
+            <label class="checkbox checkbox--inline">
+                <span>Show result immediately</span>
+                <input type="checkbox" name="show_result_immediately"
+                       {% if test.show_result_immediately %}checked{% endif %}>
+                <span class="checkbox__box"></span>
+            </label>
+
+            <button class="btn btn--primary btn--block" type="submit"
+                    name="action" value="save">Save</button>
+        </section>
+    </form>
+</section>
+{% endblock %}
